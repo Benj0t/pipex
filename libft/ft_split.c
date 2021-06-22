@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: psemsari <psemsari@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/15 14:59:14 by psemsari          #+#    #+#             */
-/*   Updated: 2019/10/26 15:04:17 by psemsari         ###   ########.fr       */
+/*   Updated: 2021/06/22 13:25:38 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ static int		ft_mallocage(char const *str, char **tab, char c)
 			return (ft_tabfree(tab));
 		a++;
 	}
+	tab[a] = NULL;
 	return (1);
 }
 

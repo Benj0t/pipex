@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/21 18:07:44 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/22 16:57:29 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,16 +51,32 @@ int	get_arg(char *left, char *right, t_parser *comm)
 	comm->command = first_arg(left);
 	if (!comm->command)
 		return (1);
-	comm->argument = ft_split(left + ft_strlen(comm->command), ' ');
+	comm->argument = ft_split(left, ' ');
 	if (!comm->argument)
 		return (free_arg(comm, 0));
 	comm->next->command = first_arg(right);
 	if (!comm->next->command)
 		return (free_arg(comm, 1));
-	comm->next->argument = ft_split(right + ft_strlen(comm->next->command), ' ');
+	comm->next->argument = ft_split(right, ' ');
 	if (!comm->argument)
 		return (free_arg(comm, 2));
 	return (0);
+}
+
+void	print_args(t_parser *comm)
+{
+	printf("First command: %s\n", comm->command);
+	int i = 0;
+	while (comm->argument && comm->argument[i])
+	{
+		printf("Next argument: %s\n", comm->argument[i++]);
+	}
+	i = 0;
+	printf("\nSecond command: %s\n", comm->next->command);
+	while (comm->next->argument && comm->next->argument[i])
+	{
+		printf("Next argument: %s\n", comm->next->argument[i++]);
+	}
 }
 
 int main(int argc, char **argv, char **envp)
@@ -85,12 +101,14 @@ int main(int argc, char **argv, char **envp)
 	spipe.l_env = envp;
 	if (argc != 5)
 		return (1);
+	ft_putstr_fd("esnuifbeyuf\n", 2);
 	err = exec_redir(argv[1], argv[4], &redir);
 	if (err)
 		return (err);
 	err = get_arg(argv[2], argv[3], comm);
 	if (err)
 		return (err);
+	//print_args(comm);
 	err = single_pipe(comm, &redir, &spipe);
 	if (err)
 		return (err);

@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:06:55 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/21 16:39:47 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/22 17:00:37 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int		try_rdonly(int *fd, char *redin, t_redir *redir)
 		return (err_msg("Can't open redirection file !"));
 	if (redir->std_in != -1)
 		close(redir->std_in);
+	printf("fd: %d\n", *fd);
 	redir->std_in = *fd;
 	return (0);
 }
@@ -94,5 +95,9 @@ int exec_redir(char *redin, char *redout, t_redir *redir)
 	if (try_wronly(&out, redout, redir) == 1)
 		return (1);
 	dup_files(redir);
+	char buffer[11];
+	read(0, buffer, 10);
+	buffer[10] = '\0';
+	printf("buffer: %s\n", buffer);
 	return (0);
 }
