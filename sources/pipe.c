@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:35:07 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/22 16:57:11 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/23 19:00:24 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static int		left_command(t_pipe *spipe, t_redir *redir,\
 	{
 		if (redir->std_out == -1)
 			dup2(spipe->curr_p[1], 1);
-		dup2(spipe->curr_p[0], 0);
+		close(spipe->curr_p[0]);
 		exit(execve(spipe->path, command->argument, spipe->l_env));
 	}
 	spipe->child[0] = g_child;
@@ -87,7 +87,8 @@ static int		right_command(t_pipe *spipe, t_redir *redir,\
 		return (spipe->ret[1] = invalid_command(spipe, command, 1));
 	if ((g_child = fork()) == 0)
 	{
-		dup2(spipe->curr_p[0], 1);
+		if (redir->std_in == -1)
+			dup2(spipe->curr_p[0], 0);
 		close(spipe->curr_p[1]);
 		execve(spipe->path, command->argument, spipe->l_env);
 	}
@@ -122,7 +123,7 @@ int				right_pipe(t_parser *command, t_redir *redir, t_pipe *spipe)
 	return (1);
 }
 
-int				single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe)
+int				single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe, char **argv)
 {
 	int			i;
 	t_parser	*tmp;
@@ -132,11 +133,15 @@ int				single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe)
 	spipe->index = 0;
 	spipe->curr_p[0] = -1;
 	spipe->curr_p[1] = -1;
+	exec_redir_in(argv[1], redir);
 	left_pipe(tmp, redir, spipe);
+	end_redir(redir);
+	exec_redir_out(argv[4], redir);
 	right_pipe(tmp, redir, spipe);
-	waitpid(spipe->child[1], (int *)&(spipe->pid[1]), 0);
-	spipe->ret[1] = WEXITSTATUS(spipe->pid[1]);
+	end_redir(redir);
 	waitpid(spipe->child[0], (int *)&(spipe->pid[0]), 0);
 	spipe->ret[0] = WEXITSTATUS(spipe->pid[0]);
+	waitpid(spipe->child[1], (int *)&(spipe->pid[1]), 0);
+	spipe->ret[1] = WEXITSTATUS(spipe->pid[1]);
 	return (1);
 }

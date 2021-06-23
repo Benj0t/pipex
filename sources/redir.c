@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:06:55 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/22 17:00:37 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/23 18:52:30 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,18 +52,19 @@ void	save_std(t_redir *redir)
 
 int		try_rdonly(int *fd, char *redin, t_redir *redir)
 {
-	if ((*fd = open(redin, O_RDONLY, 0644) == -1))
+	*fd = open(redin, O_RDONLY, 0644);
+	if (*fd == -1)
 		return (err_msg("Can't open redirection file !"));
 	if (redir->std_in != -1)
 		close(redir->std_in);
-	printf("fd: %d\n", *fd);
 	redir->std_in = *fd;
 	return (0);
 }
 
 int		try_wronly(int *fd, char *redout, t_redir *redir)
 {
-	if ((*fd = open(redout, O_WRONLY | O_TRUNC, 0644)) == -1)
+	*fd = open(redout, O_WRONLY | O_TRUNC, 0644);
+	if (*fd == -1)
 	{
 		if ((*fd = open(redout, O_CREAT, 0644)) == -1)
 			return (err_msg("Can't create redirection file !"));
@@ -80,24 +81,30 @@ int		try_wronly(int *fd, char *redout, t_redir *redir)
 	return (0);
 }
 
-int exec_redir(char *redin, char *redout, t_redir *redir)
+int exec_redir_in(char *red, t_redir *redir)
 {
 	int		in;
+
+	save_std(redir);
+	if (!red)
+		return (1);
+	in = 0;
+	if (try_rdonly(&in, red, redir) == 1)
+		return (1);
+	dup_files(redir);
+	return (0);
+}
+
+int exec_redir_out(char *red, t_redir *redir)
+{
 	int		out;
 
 	save_std(redir);
-	if (!redin || !redout)
+	if (!red)
 		return (1);
-	in = 0;
 	out = 0;
-	if (try_rdonly(&in, redin, redir) == 1)
-		return (1);
-	if (try_wronly(&out, redout, redir) == 1)
+	if (try_wronly(&out, red, redir) == 1)
 		return (1);
 	dup_files(redir);
-	char buffer[11];
-	read(0, buffer, 10);
-	buffer[10] = '\0';
-	printf("buffer: %s\n", buffer);
 	return (0);
 }

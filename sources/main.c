@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/22 16:57:29 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/23 18:53:16 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,14 +102,11 @@ int main(int argc, char **argv, char **envp)
 	if (argc != 5)
 		return (1);
 	ft_putstr_fd("esnuifbeyuf\n", 2);
-	err = exec_redir(argv[1], argv[4], &redir);
-	if (err)
-		return (err);
 	err = get_arg(argv[2], argv[3], comm);
 	if (err)
 		return (err);
 	//print_args(comm);
-	err = single_pipe(comm, &redir, &spipe);
+	err = single_pipe(comm, &redir, &spipe, argv);
 	if (err)
 		return (err);
 }

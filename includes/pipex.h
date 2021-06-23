@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:47:42 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/21 16:34:24 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/06/23 18:53:11 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ typedef	struct				s_parser
 {
 	char					*command;
 	char					**argument;
-	struct s_parser		*next;
+	struct s_parser			*next;
 }							t_parser;
 
 typedef struct				s_redir
@@ -56,9 +56,10 @@ typedef struct				s_redir
 	int						save_stdout;
 }							t_redir;
 
-int		exec_redir(char *redin, char *redout, t_redir *redir);
+int		exec_redir_in(char *red, t_redir *redir);
+int		exec_redir_out(char *red, t_redir *redir);
 void	end_redir(t_redir *redir);
-int		single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe);
+int		single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe, char **argv);
 char	*ft_path(char **env, t_parser *comm, t_pipe *spipe);
 char	*init_path(char **env, t_parser *command, t_pipe *spipe, int index);
 int		invalid_command(t_pipe *spipe, t_parser *comm1, int index);
