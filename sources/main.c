@@ -78,7 +78,7 @@ void	print_args(t_parser *comm)
 		printf("Next argument: %s\n", comm->next->argument[i++]);
 	}
 }
-
+// FILE1 CMD1 CMD2 FILE2
 int main(int argc, char **argv, char **envp)
 {
 	int			err;
@@ -101,11 +101,9 @@ int main(int argc, char **argv, char **envp)
 	spipe.l_env = envp;
 	if (argc != 5)
 		return (1);
-	ft_putstr_fd("esnuifbeyuf\n", 2);
 	err = get_arg(argv[2], argv[3], comm);
 	if (err)
 		return (err);
-	//print_args(comm);
 	err = single_pipe(comm, &redir, &spipe, argv);
 	if (err)
 		return (err);

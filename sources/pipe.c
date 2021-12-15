@@ -61,16 +61,13 @@ int			invalid_command(t_pipe *spipe, t_parser *comm1, int index)
 static int		left_command(t_pipe *spipe, t_redir *redir,\
 						t_parser *command)
 {
-	int index;
 
 	(void)redir;
-	index = spipe->b_ret[0];
-	if (index && (init_path(spipe->l_env, command, spipe, 0) == NULL))
+	if (init_path(spipe->l_env, command, spipe, 0) == NULL)
 		return (spipe->ret[0] = invalid_command(spipe, command, 0));
 	if ((g_child = fork()) == 0)
 	{
-		if (redir->std_out == -1)
-			dup2(spipe->curr_p[1], 1);
+		dup2(spipe->curr_p[1], 1);
 		close(spipe->curr_p[0]);
 		exit(execve(spipe->path, command->argument, spipe->l_env));
 	}
@@ -82,13 +79,11 @@ static int		left_command(t_pipe *spipe, t_redir *redir,\
 static int		right_command(t_pipe *spipe, t_redir *redir,\
 						t_parser *command)
 {
-	(void)command;
 	if ((init_path(spipe->l_env, command, spipe, 1)) == NULL)
 		return (spipe->ret[1] = invalid_command(spipe, command, 1));
 	if ((g_child = fork()) == 0)
 	{
-		if (redir->std_in == -1)
-			dup2(spipe->curr_p[0], 0);
+		dup2(spipe->curr_p[0], 0);
 		close(spipe->curr_p[1]);
 		execve(spipe->path, command->argument, spipe->l_env);
 	}
@@ -139,9 +134,9 @@ int				single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe, char **argv
 	exec_redir_out(argv[4], redir);
 	right_pipe(tmp, redir, spipe);
 	end_redir(redir);
-	waitpid(spipe->child[0], (int *)&(spipe->pid[0]), 0);
-	spipe->ret[0] = WEXITSTATUS(spipe->pid[0]);
 	waitpid(spipe->child[1], (int *)&(spipe->pid[1]), 0);
 	spipe->ret[1] = WEXITSTATUS(spipe->pid[1]);
+	waitpid(spipe->child[0], (int *)&(spipe->pid[0]), 0);
+	spipe->ret[0] = WEXITSTATUS(spipe->pid[0]);
 	return (1);
 }
