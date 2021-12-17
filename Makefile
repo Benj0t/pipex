@@ -6,7 +6,7 @@
 #    By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/21 13:55:50 by bemoreau          #+#    #+#              #
-#    Updated: 2021/06/21 16:26:15 by bemoreau         ###   ########.fr        #
+#    Updated: 2021/12/16 19:03:19 by bemoreau         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,13 +23,25 @@ FILES =		./sources/main\
 			./sources/redir\
 			./sources/pipe\
 			./sources/path\
-
+			./sources/utils\
+			./sources/utils2\
+			./sources/utils/ft_split\
+			./sources/utils/ft_substr\
+			./sources/utils/ft_putendl_fd\
+			./sources/utils/ft_putstr_fd\
+			./sources/utils/ft_strncmp\
+			./sources/utils/ft_strdup\
+			./sources/utils/ft_strjoin_c\
+			./sources/utils/ft_calloc\
+			./sources/utils/ft_strlen\
+			./sources/utils/ft_putchar_fd\
+			./sources/utils/ft_bzero\
+			./sources/utils/ft_memset
 SRCS = $(addsuffix .c, $(FILES))
 OBJ = $(SRCS:.c=.o)
 
 CC = gcc
 L_CC = clang
-LIB = ./libft/libft.a
 FLAGS = -Wall -Wextra -Werror
 
 ### COLORS ###
@@ -46,31 +58,23 @@ VIOLET = \033[1;35m
 CYAN = \033[1;36m
 WHITE = \033[1;37m
 
-all: 		LIBFT $(NAME)
-
-LIBFT:
-			@echo "$(CYAN)Building libft:$(NOC) $@"
-			cd ./libft/ && make && cd ..
+all: 		$(NAME)
 
 $(NAME): 	$(OBJ)
 			@echo "$(CYAN)Constructing executable:$(NOC) $@"
-			@$(L_CC) -g3 $(FLAGS) -o $(NAME) $(OBJ) $(LIB)
+			@$(L_CC) -g3 $(FLAGS) -o $(NAME) $(OBJ)
 
 .c.o:		${SRCS}
 			@echo " $(VIOLET)[$(L_CC)] $(GREEN)[$(FLAGS)]$(NOC) $(YELLOW)in progress ...:$(NOC) $< $(RED)->$(NOC) $@"
 			@$(L_CC) -g3 $(FLAGS) -c -I$(INC_PATH) $< -o ${<:.c=.o}
 clean:
-	@echo "$(CYAN)Clean libft:$(NOC) $@"
-	@cd libft && make clean && cd ..
 	@echo "\n$(RED)Removing '.o' objects: $(NOC) $@"
 	@rm -f $(OBJ)
 
 fclean: clean
-	@echo "$(CYAN)Fclean libft:$(NOC) $@"
-	@cd libft && make fclean && cd ..
 	@echo "\n$(RED)Removing executable: $(NOC) $@"
 	@rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: all clean re fclean MLX LIBFT
+.PHONY: all clean re fclean

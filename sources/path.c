@@ -6,65 +6,28 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 14:08:51 by marvin            #+#    #+#             */
-/*   Updated: 2021/06/21 16:36:09 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/17 00:30:00 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-int			get_path_id(char **env)
-{
-	int i;
-
-	i = 0;
-	while (env[i])
-	{
-		if (!ft_strncmp("PATH=", env[i], 5))
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
-void		dealloc_tab(char **tab)
-{
-	char	**start;
-
-	start = tab;
-	while (*tab != NULL)
-	{
-		free(*tab);
-		tab++;
-	}
-	free(start);
-}
-
-void		error_msg(t_pipe *spipe, struct stat buf, int ret)
-{
-	spipe->b_ret[spipe->index] = 8;
-	if (!(buf.st_mode & S_IFREG) && ret == 0)
-		spipe->b_ret[spipe->index] = 6;
-	if (!(buf.st_mode & S_IXUSR) && ret == 0)
-		spipe->b_ret[spipe->index] = 7;
-}
-
-char		*rel_path(char **env, t_parser *comm, t_pipe *spipe)
+char	*rel_path(char **env, t_parser *comm, t_pipe *spipe)
 {
 	struct stat	buf;
 	int			ret;
 
-	ret = 0;
 	(void)env;
-	if ((ret = stat(comm->argument[0], &buf)) == 0 && (buf.st_mode & S_IXUSR)\
-												&& (buf.st_mode & S_IFREG))
+	ret = stat(comm->argument[0], &buf);
+	if (ret == 0 && (buf.st_mode & S_IXUSR) && (buf.st_mode & S_IFREG))
 		return (ft_strdup(comm->argument[0]));
 	error_msg(spipe, buf, ret);
 	return (NULL);
 }
 
-int			rel_char(char *name)
+int	rel_char(char *name)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (name[i])
@@ -76,51 +39,55 @@ int			rel_char(char *name)
 	return (0);
 }
 
-char		*try_exec(char **tab, char **name, t_parser *comm, t_pipe *spipe)
+char	*try_exec(char **tab, char **name, t_parser *comm, t_pipe *spipe)
 {
-	struct stat buf;
+	struct stat	buf;
 	int			i;
+	int			j;
+	int			k;
 
 	i = -1;
 	while (tab[++i])
 	{
-		if ((*name = ft_strjoin_c(tab[i], comm->command, '/')) == NULL)
-		{
-			dealloc_tab(tab);
-			return (NULL);
-		}
+		*name = ft_strjoin_c(tab[i], comm->command, '/');
+		if (*name == NULL)
+			return (dealloc_tab(tab, NULL));
 		if (stat(*name, &buf) == 0)
-			if (buf.st_mode & S_IFREG)
-				if (buf.st_mode & S_IXUSR)
-				{
-					spipe->b_ret[spipe->index] = 1;
-					dealloc_tab(tab);
-					return (*name);
-				}
+		{
+			k = buf.st_mode & S_IXUSR;
+			j = buf.st_mode & S_IFREG;
+			if (k && j)
+			{
+				spipe->b_ret[spipe->index] = 1;
+				return (dealloc_tab(tab, *name));
+			}
+		}
 		spipe->b_ret[spipe->index] = 127;
 		free(*name);
 	}
 	return (NULL);
 }
 
-char		*ft_path(char **env, t_parser *comm, t_pipe *spipe)
+char	*ft_path(char **env, t_parser *comm, t_pipe *spipe)
 {
 	char		*s;
 	char		**tab;
 	int			i;
 
+	s = NULL;
 	if (rel_char(comm->command))
-	{
-		s = rel_path(env, comm, spipe);
-		return (s);
-	}
+		return (rel_path(env, comm, spipe));
 	i = get_path_id(env);
-	if (i < 0 || (tab = ft_split(env[i] + 5, ':')) == NULL)
+	if (i < 0)
 		return (NULL);
-	i = 0;
+	tab = ft_split(env[i] + 5, ':');
+	if (!tab)
+		return (NULL);
 	if (!rel_char(comm->command))
-		if ((s = try_exec(tab, &s, comm, spipe)))
+	{
+		s = try_exec(tab, &s, comm, spipe);
+		if (s)
 			return (s);
-	dealloc_tab(tab);
-	return (NULL);
+	}
+	return (dealloc_tab(tab, NULL));
 }

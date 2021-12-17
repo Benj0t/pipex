@@ -6,13 +6,11 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/23 18:53:16 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/17 01:05:29 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-pid_t	g_child;
 
 char	*first_arg(char *str)
 {
@@ -26,6 +24,16 @@ char	*first_arg(char *str)
 	while (str[i + j] != ' ' && str[i + j])
 		j++;
 	return (ft_substr(str, i, j));
+}
+
+void	free_tab(char **tab)
+{
+	int i;
+
+	i = 0;
+	while (tab[i])
+		free(tab[i++]);
+	free(tab);
 }
 
 int	free_arg(t_parser *comm, int bool)
@@ -63,48 +71,44 @@ int	get_arg(char *left, char *right, t_parser *comm)
 	return (0);
 }
 
-void	print_args(t_parser *comm)
+void	free_comm(t_parser *comm)
 {
-	printf("First command: %s\n", comm->command);
-	int i = 0;
-	while (comm->argument && comm->argument[i])
-	{
-		printf("Next argument: %s\n", comm->argument[i++]);
-	}
+	int i;
+
 	i = 0;
-	printf("\nSecond command: %s\n", comm->next->command);
-	while (comm->next->argument && comm->next->argument[i])
-	{
-		printf("Next argument: %s\n", comm->next->argument[i++]);
-	}
+	free(comm->command);
+	while (comm->argument[i])
+		free(comm->argument[i++]);
+	free(comm->argument);
+	i = 0;
+	while (comm->next->argument[i])
+		free(comm->next->argument[i++]);
+	free(comm->next->argument);
+	free(comm->next->command);
+	free(comm->next);
+	free(comm);
+	return ;
 }
-// FILE1 CMD1 CMD2 FILE2
-int main(int argc, char **argv, char **envp)
+
+int	main(int argc, char **argv, char **envp)
 {
 	int			err;
 	t_redir		redir;
 	t_pipe		spipe;
 	t_parser	*comm;
 
-	comm = (t_parser *)malloc(sizeof(t_parser));
-	if (!comm)
+	if (argc != 5)
 		return (1);
-	comm->command = NULL;
-	comm->argument = NULL;
-	comm->next = (t_parser *)malloc(sizeof(t_parser));
-	if (!comm->next)
-		return (1);
-	comm->next->command = NULL;
-	comm->next->argument = NULL;
+	comm = init_comm();
 	err = 0;
 	spipe.path = NULL;
 	spipe.l_env = envp;
-	if (argc != 5)
-		return (1);
 	err = get_arg(argv[2], argv[3], comm);
 	if (err)
 		return (err);
 	err = single_pipe(comm, &redir, &spipe, argv);
 	if (err)
 		return (err);
+	free_comm(comm);
+	return (0);
 }

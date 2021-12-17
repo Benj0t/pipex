@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:06:55 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/06/23 18:52:30 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/16 19:02:17 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,29 +28,7 @@ void	end_redir(t_redir *redir)
 	redir->std_in = -1;
 }
 
-int		err_msg(char *str)
-{
-	ft_putendl_fd(str, 2);
-	return (1);
-}
-
-void	dup_files(t_redir *redir)
-{
-	if (redir->std_in != -1)
-		dup2(redir->std_in, 0);
-	if (redir->std_out != -1)
-		dup2(redir->std_out, 1);
-}
-
-void	save_std(t_redir *redir)
-{
-	redir->save_stdin = dup(0);
-	redir->save_stdout = dup(1);
-	redir->std_in = -1;
-	redir->std_out = -1;
-}
-
-int		try_rdonly(int *fd, char *redin, t_redir *redir)
+int	try_rdonly(int *fd, char *redin, t_redir *redir)
 {
 	*fd = open(redin, O_RDONLY, 0644);
 	if (*fd == -1)
@@ -61,17 +39,19 @@ int		try_rdonly(int *fd, char *redin, t_redir *redir)
 	return (0);
 }
 
-int		try_wronly(int *fd, char *redout, t_redir *redir)
+int	try_wronly(int *fd, char *redout, t_redir *redir)
 {
 	*fd = open(redout, O_WRONLY | O_TRUNC, 0644);
 	if (*fd == -1)
 	{
-		if ((*fd = open(redout, O_CREAT, 0644)) == -1)
+		*fd = open(redout, O_CREAT, 0644);
+		if (*fd == -1)
 			return (err_msg("Can't create redirection file !"));
 		else
 		{
 			close(*fd);
-			if ((*fd = open(redout, O_WRONLY | O_TRUNC, 0644)) == -1)
+			*fd = open(redout, O_WRONLY | O_TRUNC, 0644);
+			if (*fd == -1)
 				return (err_msg("Can't open redirection file !"));
 		}
 	}
@@ -81,9 +61,9 @@ int		try_wronly(int *fd, char *redout, t_redir *redir)
 	return (0);
 }
 
-int exec_redir_in(char *red, t_redir *redir)
+int	exec_redir_in(char *red, t_redir *redir)
 {
-	int		in;
+	int	in;
 
 	save_std(redir);
 	if (!red)
@@ -95,9 +75,9 @@ int exec_redir_in(char *red, t_redir *redir)
 	return (0);
 }
 
-int exec_redir_out(char *red, t_redir *redir)
+int	exec_redir_out(char *red, t_redir *redir)
 {
-	int		out;
+	int	out;
 
 	save_std(redir);
 	if (!red)
