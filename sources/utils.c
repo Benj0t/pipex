@@ -12,6 +12,31 @@
 
 #include "pipex.h"
 
+void	free_comm(t_parser *comm)
+{
+	int	i;
+
+	i = 0;
+	if (comm->command)
+		free(comm->command);
+	while (comm->argument && comm->argument[i])
+		free(comm->argument[i++]);
+	if (comm->argument)
+		free(comm->argument);
+	i = 0;
+	while (comm->next->argument && comm->next->argument[i])
+		free(comm->next->argument[i++]);
+	if (comm->next->argument)
+		free(comm->next->argument);
+	if (comm->next->command)
+		free(comm->next->command);
+	if (comm->next)
+		free(comm->next);
+	if (comm)
+		free(comm);
+	return ;
+}
+
 char	*init_path(char **env, t_parser *command, t_pipe *spipe, int index)
 {
 	if (spipe->path)

@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:47:42 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/17 00:07:21 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/17 12:49:07 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_redir
 }							t_redir;
 
 t_parser	*init_comm(void);
+void		free_comm(t_parser *comm);
 void		*ft_memset(void *s, int c, size_t n);
 void		ft_bzero(void *s, size_t n);
 void		ft_putchar_fd(char c, int fd);

@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/17 01:05:29 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/17 16:16:27 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,14 @@ char	*first_arg(char *str)
 		i++;
 	while (str[i + j] != ' ' && str[i + j])
 		j++;
+	if ((i + j) == 0)
+		return (NULL);
 	return (ft_substr(str, i, j));
 }
 
 void	free_tab(char **tab)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (tab[i])
@@ -71,25 +73,6 @@ int	get_arg(char *left, char *right, t_parser *comm)
 	return (0);
 }
 
-void	free_comm(t_parser *comm)
-{
-	int i;
-
-	i = 0;
-	free(comm->command);
-	while (comm->argument[i])
-		free(comm->argument[i++]);
-	free(comm->argument);
-	i = 0;
-	while (comm->next->argument[i])
-		free(comm->next->argument[i++]);
-	free(comm->next->argument);
-	free(comm->next->command);
-	free(comm->next);
-	free(comm);
-	return ;
-}
-
 int	main(int argc, char **argv, char **envp)
 {
 	int			err;
@@ -105,10 +88,16 @@ int	main(int argc, char **argv, char **envp)
 	spipe.l_env = envp;
 	err = get_arg(argv[2], argv[3], comm);
 	if (err)
+	{
+		free_comm(comm);
 		return (err);
+	}
 	err = single_pipe(comm, &redir, &spipe, argv);
 	if (err)
+	{
+		free_comm(comm);
 		return (err);
+	}
 	free_comm(comm);
 	return (0);
 }
