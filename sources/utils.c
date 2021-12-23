@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-void	free_comm(t_parser *comm)
+int	free_comm(t_parser *comm)
 {
 	int	i;
 
@@ -34,7 +34,7 @@ void	free_comm(t_parser *comm)
 		free(comm->next);
 	if (comm)
 		free(comm);
-	return ;
+	return (1);
 }
 
 char	*init_path(char **env, t_parser *command, t_pipe *spipe, int index)
@@ -98,5 +98,6 @@ t_parser	*init_comm(void)
 	}
 	comm->next->command = NULL;
 	comm->next->argument = NULL;
+	comm->next->next = NULL;
 	return (comm);
 }

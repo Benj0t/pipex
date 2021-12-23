@@ -31,8 +31,6 @@ int	invalid_command(t_pipe *spipe, t_parser *comm1, int index)
 		return (127);
 	ft_putstr_fd(comm1->argument[0], 2);
 	ft_putstr_fd(": command not found\n", 2);
-	if (comm1->argument)
-		free(comm1->argument);
 	return (127);
 }
 

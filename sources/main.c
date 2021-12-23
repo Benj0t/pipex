@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/17 16:16:27 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/22 11:44:24 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,24 +38,6 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
-int	free_arg(t_parser *comm, int bool)
-{
-	if (!bool)
-		free(comm->argument);
-	if (bool == 1)
-	{
-		free(comm->argument);
-		free(comm->next->command);
-	}
-	if (bool == 2)
-	{
-		free(comm->argument);
-		free(comm->next->command);
-		free(comm->next->argument);
-	}
-	return (1);
-}
-
 int	get_arg(char *left, char *right, t_parser *comm)
 {
 	comm->command = first_arg(left);
@@ -63,13 +45,13 @@ int	get_arg(char *left, char *right, t_parser *comm)
 		return (1);
 	comm->argument = ft_split(left, ' ');
 	if (!comm->argument)
-		return (free_arg(comm, 0));
+		return (free_comm(comm));
 	comm->next->command = first_arg(right);
 	if (!comm->next->command)
-		return (free_arg(comm, 1));
+		return (free_comm(comm));
 	comm->next->argument = ft_split(right, ' ');
 	if (!comm->argument)
-		return (free_arg(comm, 2));
+		return (free_comm(comm));
 	return (0);
 }
 

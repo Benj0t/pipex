@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:35:07 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/17 00:59:21 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/22 11:49:16 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static int	left_command(t_pipe *spipe, t_redir *redir, \
 		exit(execve(spipe->path, command->argument, spipe->l_env));
 	}
 	spipe->child[0] = spipe->g_child;
-	free(command->argument);
 	return (0);
 }
 
@@ -67,8 +66,6 @@ int	right_pipe(t_parser *command, t_redir *redir, t_pipe *spipe)
 	spipe->index++;
 	if ((right_command(spipe, redir, command->next)) != 0)
 		return (0);
-	if (spipe->ret[1] <= 1)
-		free(command->next->argument);
 	return (1);
 }
 
