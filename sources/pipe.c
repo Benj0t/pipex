@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:35:07 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/22 11:49:16 by bemoreau         ###   ########.fr       */
+/*   Updated: 2021/12/26 23:45:31 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,12 @@ int	single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe, char **argv)
 	spipe->g_child = 0;
 	spipe->curr_p[0] = -1;
 	spipe->curr_p[1] = -1;
-	exec_redir_in(argv[1], redir);
+	if (exec_redir_in(argv[1], redir))
+		return (1);
 	left_pipe(tmp, redir, spipe);
 	end_redir(redir);
-	exec_redir_out(argv[4], redir);
+	if (exec_redir_out(argv[4], redir))
+		return (1);
 	right_pipe(tmp, redir, spipe);
 	end_redir(redir);
 	waitpid(spipe->child[1], (int *)&(spipe->pid[1]), 0);
