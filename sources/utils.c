@@ -72,15 +72,6 @@ void	*dealloc_tab(char **tab, void *ret)
 	return (ret);
 }
 
-void	error_msg(t_pipe *spipe, struct stat buf, int ret)
-{
-	spipe->b_ret[spipe->index] = 8;
-	if (!(buf.st_mode & S_IFREG) && ret == 0)
-		spipe->b_ret[spipe->index] = 6;
-	if (!(buf.st_mode & S_IXUSR) && ret == 0)
-		spipe->b_ret[spipe->index] = 7;
-}
-
 t_parser	*init_comm(void)
 {
 	t_parser	*comm;
@@ -100,4 +91,16 @@ t_parser	*init_comm(void)
 	comm->next->argument = NULL;
 	comm->next->next = NULL;
 	return (comm);
+}
+
+void	init_spipe(t_pipe *spipe, char **envp)
+{
+	spipe->path = NULL;
+	spipe->l_env = envp;
+	spipe->index = 0;
+	spipe->g_child = 0;
+	spipe->curr_p[0] = -1;
+	spipe->curr_p[1] = -1;
+	spipe->ret[0] = 0;
+	spipe->ret[1] = 0;
 }

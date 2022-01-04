@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 14:08:51 by marvin            #+#    #+#             */
-/*   Updated: 2021/12/17 00:30:00 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/03 08:54:59 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,13 @@
 
 char	*rel_path(char **env, t_parser *comm, t_pipe *spipe)
 {
-	struct stat	buf;
 	int			ret;
 
 	(void)env;
-	ret = stat(comm->argument[0], &buf);
-	if (ret == 0 && (buf.st_mode & S_IXUSR) && (buf.st_mode & S_IFREG))
+	ret = access(comm->argument[0], F_OK);
+	if (ret == 0)
 		return (ft_strdup(comm->argument[0]));
-	error_msg(spipe, buf, ret);
+	spipe->b_ret[spipe->index] = 8;
 	return (NULL);
 }
 
@@ -41,10 +40,7 @@ int	rel_char(char *name)
 
 char	*try_exec(char **tab, char **name, t_parser *comm, t_pipe *spipe)
 {
-	struct stat	buf;
 	int			i;
-	int			j;
-	int			k;
 
 	i = -1;
 	while (tab[++i])
@@ -52,15 +48,10 @@ char	*try_exec(char **tab, char **name, t_parser *comm, t_pipe *spipe)
 		*name = ft_strjoin_c(tab[i], comm->command, '/');
 		if (*name == NULL)
 			return (dealloc_tab(tab, NULL));
-		if (stat(*name, &buf) == 0)
+		if (access(*name, F_OK) == 0)
 		{
-			k = buf.st_mode & S_IXUSR;
-			j = buf.st_mode & S_IFREG;
-			if (k && j)
-			{
-				spipe->b_ret[spipe->index] = 1;
-				return (dealloc_tab(tab, *name));
-			}
+			spipe->b_ret[spipe->index] = 1;
+			return (dealloc_tab(tab, *name));
 		}
 		spipe->b_ret[spipe->index] = 127;
 		free(*name);

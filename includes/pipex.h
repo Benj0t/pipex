@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:47:42 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/22 11:45:03 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/03 09:53:30 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_redir
 	int						save_stdout;
 }							t_redir;
 
+void		init_spipe(t_pipe *spipe, char **envp);
 t_parser	*init_comm(void);
 int			free_comm(t_parser *comm);
 void		*ft_memset(void *s, int c, size_t n);
@@ -79,7 +80,6 @@ char		*ft_path(char **env, t_parser *comm, t_pipe *spipe);
 char		*init_path(char **env, t_parser *command, t_pipe *spipe, int index);
 int			invalid_command(t_pipe *spipe, t_parser *comm1, int index);
 char		**ft_split(char const *s, char c);
-void		error_msg(t_pipe *spipe, struct stat buf, int ret);
 void		*dealloc_tab(char **tab, void *ret);
 int			invalid_command(t_pipe *spipe, t_parser *comm1, int index);
 int			get_path_id(char **env);

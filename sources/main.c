@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/22 11:44:24 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/03 10:03:10 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,22 +57,21 @@ int	get_arg(char *left, char *right, t_parser *comm)
 
 int	main(int argc, char **argv, char **envp)
 {
-	int			err;
 	t_redir		redir;
 	t_pipe		spipe;
 	t_parser	*comm;
+	int			err;
 
 	if (argc != 5)
-		return (1);
+		return (err_msg("Wrong number of arguments"));
 	comm = init_comm();
-	err = 0;
-	spipe.path = NULL;
-	spipe.l_env = envp;
-	err = get_arg(argv[2], argv[3], comm);
-	if (err)
+	if (!comm)
+		return (err_msg("Malloc error"));
+	init_spipe(&spipe, envp);
+	if (get_arg(argv[2], argv[3], comm))
 	{
 		free_comm(comm);
-		return (err);
+		return (err_msg("Error while parsing commands"));
 	}
 	err = single_pipe(comm, &redir, &spipe, argv);
 	if (err)

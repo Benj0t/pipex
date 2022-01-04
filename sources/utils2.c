@@ -15,15 +15,15 @@
 int	invalid_command(t_pipe *spipe, t_parser *comm1, int index)
 {
 	if (spipe->b_ret[index] == 3)
-		ft_putstr_fd("minishell: permission denied\n", 2);
+		ft_putstr_fd("pipex: permission denied\n", 2);
 	if (spipe->b_ret[index] == 2)
-		ft_putstr_fd("minishell: .: command not found\n", 2);
+		ft_putstr_fd("pipex: .: command not found\n", 2);
 	if (spipe->b_ret[index] == 6)
-		ft_putstr_fd("minishell: file is a directory\n", 2);
+		ft_putstr_fd("pipex: file is a directory\n", 2);
 	if (spipe->b_ret[index] == 7)
-		ft_putstr_fd("minishell: Can not execute your file\n", 2);
+		ft_putstr_fd("pipex: Can not execute your file\n", 2);
 	if (spipe->b_ret[index] == 8)
-		ft_putstr_fd("minishell: Can not find or execute your file\n", 2);
+		ft_putstr_fd("pipex: Can not find or execute your file\n", 2);
 	if (spipe->b_ret[index] == 3 || spipe->b_ret[index] == 6 || \
 								spipe->b_ret[index] == 7)
 		return (126);
