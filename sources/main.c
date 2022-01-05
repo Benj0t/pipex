@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:04:49 by bemoreau          #+#    #+#             */
-/*   Updated: 2022/01/03 10:03:10 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/05 13:17:42 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,13 @@ int	get_arg(char *left, char *right, t_parser *comm)
 		return (1);
 	comm->argument = ft_split(left, ' ');
 	if (!comm->argument)
-		return (free_comm(comm));
+		return (1);
 	comm->next->command = first_arg(right);
 	if (!comm->next->command)
-		return (free_comm(comm));
+		return (1);
 	comm->next->argument = ft_split(right, ' ');
 	if (!comm->argument)
-		return (free_comm(comm));
+		return (1);
 	return (0);
 }
 

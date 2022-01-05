@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/09/21 14:08:51 by marvin            #+#    #+#             */
-/*   Updated: 2022/01/03 08:54:59 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/05 14:24:22 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,18 @@ char	*rel_path(char **env, t_parser *comm, t_pipe *spipe)
 
 	(void)env;
 	ret = access(comm->argument[0], F_OK);
-	if (ret == 0)
-		return (ft_strdup(comm->argument[0]));
-	spipe->b_ret[spipe->index] = 8;
-	return (NULL);
+	if (ret == -1)
+	{
+		spipe->b_ret[spipe->index] = 8;
+		return (NULL);
+	}
+	ret = access(comm->argument[0], X_OK);
+	if (ret == -1)
+	{
+		spipe->b_ret[spipe->index] = 7;
+		return (NULL);
+	}
+	return (ft_strdup(comm->argument[0]));
 }
 
 int	rel_char(char *name)
@@ -48,7 +56,7 @@ char	*try_exec(char **tab, char **name, t_parser *comm, t_pipe *spipe)
 		*name = ft_strjoin_c(tab[i], comm->command, '/');
 		if (*name == NULL)
 			return (dealloc_tab(tab, NULL));
-		if (access(*name, F_OK) == 0)
+		if (access(*name, F_OK) == 0 && access(*name, X_OK) == 0)
 		{
 			spipe->b_ret[spipe->index] = 1;
 			return (dealloc_tab(tab, *name));

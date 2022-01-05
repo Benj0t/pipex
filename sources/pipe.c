@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:35:07 by bemoreau          #+#    #+#             */
-/*   Updated: 2022/01/03 10:06:08 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/05 18:03:11 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static int	left_command(t_pipe *spipe, t_redir *redir, \
 		exit(execve(spipe->path, command->argument, spipe->l_env));
 	}
 	spipe->child[0] = spipe->g_child;
+	free(spipe->path);
+	spipe->path = NULL;
 	return (0);
 }
 
@@ -72,20 +74,24 @@ int	right_pipe(t_parser *command, t_redir *redir, t_pipe *spipe)
 int	single_pipe(t_parser *command, t_redir *redir, t_pipe *spipe, char **argv)
 {
 	t_parser	*tmp;
+	int			ret;
 
 	tmp = command;
-	if (exec_redir_in(argv[1], redir))
-		return (1);
-	if (left_pipe(tmp, redir, spipe))
-		return (spipe->ret[0]);
+	ret = exec_redir_in(argv[1], redir);
+	if (!ret)
+		if (left_pipe(tmp, redir, spipe))
+			return (spipe->ret[0]);
 	end_redir(redir);
 	if (exec_redir_out(argv[4], redir))
 		return (1);
 	if (right_pipe(tmp, redir, spipe))
 		return (spipe->ret[1]);
 	end_redir(redir);
-	waitpid(spipe->child[0], (int *)&(spipe->pid[0]), 0);
-	spipe->ret[0] = WEXITSTATUS(spipe->pid[0]);
+	if (!ret)
+	{
+		waitpid(spipe->child[0], (int *)&(spipe->pid[0]), 0);
+		spipe->ret[0] = WEXITSTATUS(spipe->pid[0]);
+	}
 	waitpid(spipe->child[1], (int *)&(spipe->pid[1]), 0);
 	spipe->ret[1] = WEXITSTATUS(spipe->pid[1]);
 	if (spipe->ret[0])

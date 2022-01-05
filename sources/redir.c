@@ -6,7 +6,7 @@
 /*   By: bemoreau <bemoreau@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 14:06:55 by bemoreau          #+#    #+#             */
-/*   Updated: 2021/12/26 23:42:53 by bemoreau         ###   ########.fr       */
+/*   Updated: 2022/01/05 18:10:11 by bemoreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,11 @@ int	try_rdonly(int *fd, char *redin, t_redir *redir)
 {
 	*fd = open(redin, O_RDONLY, 0644);
 	if (*fd == -1)
-		return (err_msg("Can't open redirection file !"));
+	{
+		ft_putstr_fd("pipex: permission denied: ", 2);
+		ft_putendl_fd(redin, 2);
+		return (1);
+	}
 	if (redir->std_in != -1)
 		close(redir->std_in);
 	redir->std_in = *fd;
@@ -46,13 +50,19 @@ int	try_wronly(int *fd, char *redout, t_redir *redir)
 	{
 		*fd = open(redout, O_CREAT, 0644);
 		if (*fd == -1)
-			return (err_msg("Can't create redirection file !"));
+		{
+			ft_putstr_fd("pipex: permission denied: ", 2);
+			return (err_msg(redout));
+		}
 		else
 		{
 			close(*fd);
 			*fd = open(redout, O_WRONLY | O_TRUNC, 0644);
 			if (*fd == -1)
-				return (err_msg("Can't open redirection file !"));
+			{
+				ft_putstr_fd("pipex: permission denied: ", 2);
+				return (err_msg(redout));
+			}
 		}
 	}
 	if (redir->std_out != -1)
